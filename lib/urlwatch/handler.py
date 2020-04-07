@@ -46,7 +46,9 @@ class JobState(object):
         self.job = job
         self.verb = None
         self.old_data = None
+        self.old_data_unfiltered = None
         self.new_data = None
+        self.new_data_unfiltered = None
         self.history_data = {}
         self.timestamp = None
         self.exception = None
@@ -57,7 +59,7 @@ class JobState(object):
 
     def load(self):
         guid = self.job.get_guid()
-        self.old_data, self.timestamp, self.tries, self.etag = self.cache_storage.load(self.job, guid)
+        self.old_data, self.old_data_unfiltered, self.timestamp, self.tries, self.etag = self.cache_storage.load(self.job, guid)
         if self.tries is None:
             self.tries = 0
         if self.job.compared_versions and self.job.compared_versions > 1:
@@ -68,7 +70,7 @@ class JobState(object):
             # If no new data has been retrieved due to an exception, use the old job data
             self.new_data = self.old_data
 
-        self.cache_storage.save(self.job, self.job.get_guid(), self.new_data, time.time(), self.tries, self.etag)
+        self.cache_storage.save(self.job, self.job.get_guid(), self.new_data, self.new_data_unfiltered, time.time(), self.tries, self.etag)
 
     def process(self):
         logger.info('Processing: %s', self.job)
@@ -76,6 +78,7 @@ class JobState(object):
             try:
                 self.load()
                 data = self.job.retrieve(self)
+                orig_data = data
 
                 # Apply automatic filters first
                 data = FilterBase.auto_process(self, data)
@@ -97,6 +100,7 @@ class JobState(object):
                                 subfilter = None
                             data = FilterBase.process(filter_kind, subfilter, self, data)
                 self.new_data = data
+                self.new_data_unfiltered = orig_data
 
             except Exception as e:
                 # job has a chance to format and ignore its error
