@@ -54,7 +54,7 @@ if bindir != 'bin':
 from urlwatch.command import UrlwatchCommand
 from urlwatch.config import CommandConfig
 from urlwatch.main import Urlwatch
-from urlwatch.storage import YamlConfigStorage, CacheMiniDBStorage, UrlsYaml
+from urlwatch.storage import YamlConfigStorage, CacheMiniDBStorage, CachePostgresStorage, UrlsYaml
 
 # One minute (=60 seconds) timeout for each request to avoid hanging
 socket.setdefaulttimeout(60)
@@ -100,7 +100,8 @@ def main():
 
     # setup storage API
     config_storage = YamlConfigStorage(command_config.config)
-    cache_storage = CacheMiniDBStorage(command_config.cache)
+    #cache_storage = CacheMiniDBStorage(command_config.cache)
+    cache_storage = CachePostgresStorage('psql.yaml')
     urls_storage = UrlsYaml(command_config.urls)
 
     # setup urlwatcher

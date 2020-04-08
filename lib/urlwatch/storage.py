@@ -39,6 +39,9 @@ import yaml
 import minidb
 import logging
 
+import psycopg2
+import datetime
+
 from .util import atomic_rename, edit_file
 from .jobs import JobBase, UrlJob, ShellJob
 
@@ -435,6 +438,92 @@ class CacheDirStorage(CacheStorage):
         # We only store the latest version, no need to clean
         return 0
 
+class CachePostgresStorage(CacheStorage):
+    def __init__(self, filename):
+        super().__init__(filename)
+
+        with open(filename, 'r') as f:
+            pconfig = yaml.load(f.read(), Loader=yaml.BaseLoader)
+
+        self.db = psycopg2.connect(
+            host=pconfig['host'],
+            database=pconfig['database'],
+            user=pconfig['user'],
+            password=pconfig['password'],
+        )
+
+        # create table if it doesn't exist
+        cur = self.db.cursor()
+        cur.execute('CREATE TABLE IF NOT EXISTS site_check ('
+                    'id SERIAL, '
+                    'guid char(64), '
+                    'timestamp TIMESTAMP, '
+                    'data TEXT, '
+                    'data_unfiltered TEXT, '
+                    'tries INTEGER, '
+                    'etag CHAR(64)'
+                    ')')
+        self.db.commit()
+
+    def close(self):
+        self.db.close()
+        self.db = None
+
+    def get_guids(self):
+        cur = self.db.cursor()
+        cur.execute('SELECT DISTINCT(guid) FROM site_check')
+        return [a[0] for a in cur.fetchall()]
+
+    def load(self, job, guid):
+        cur = self.db.cursor()
+        cur.execute('SELECT data, data_unfiltered, timestamp, tries, etag'
+                    ' FROM site_check'
+                    ' WHERE guid=%s'
+                    ' ORDER BY timestamp DESC LIMIT 1',
+                    (guid,))
+        r = cur.fetchone()
+        if r:
+            return r[0], r[1], int(r[2].timestamp()), r[3], r[4]
+        return None, None, None, 0, None
+
+    def get_history_data(self, guid, count=1):
+        history = {}
+        if count < 1:
+            return history
+        cur = self.db.cursor()
+        cur.execute('SELECT data, timestamp'
+                    ' FROM site_check'
+                    ' WHERE guid=%s AND tries=0'
+                    ' ORDER BY timestamp DESC',
+                    (guid,))
+        for data, ts in cur:
+            if data not in history:
+                history[data] = int(ts.timestamp())
+                if len(history) >= count:
+                    break;
+        return history
+
+    def save(self, job, guid, data, data_unfiltered, timestamp, tries,
+             etag=None):
+        cur = self.db.cursor()
+        cur.execute('INSERT INTO site_check'
+                    ' (guid, timestamp, data, data_unfiltered, tries, etag)'
+                    ' VALUES (%s, %s, %s, %s, %s, %s)',
+                    (guid, datetime.datetime.fromtimestamp(timestamp),
+                     data, data_unfiltered, tries, etag))
+        self.db.commit()
+
+    def delete(self, guid):
+        cur = self.db.cursor()
+        cur.execute('DELETE FROM site_check'
+                    ' WHERE guid=%s',
+                    (guid,))
+        self.db.commit()
+
+    def clean(self, guid):
+        # WRITE ME
+        return 0
+            
 
 class CacheEntry(minidb.Model):
     guid = str
