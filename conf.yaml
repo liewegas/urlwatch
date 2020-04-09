@@ -1,0 +1,209 @@
+default:
+  headers:
+    User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36
+
+
+## ok ##
+CA/pp:
+  filter: grepi:/_Incapsula_Resource
+
+DE/pp:
+  filter: grepi:__RequestVerificationToken
+
+CO/pp:
+  filter: grepi:/voter/ruxitagentjs_ICA2SVfjqru_10187200323152418.js,grepi:javax.faces.ViewState
+
+CT/pp:
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
+
+DC/pp:
+  filter: grepi:__CMSCsrfToken,grepi:__VIEWSTATE
+
+FL/pp:
+  filter: grepi:/cdn-cgi/l/email-protection
+
+GA/pp:
+  filter: "grepi:/MVP/mvp.do;jsessionid="
+
+HI/pp:
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
+
+IA/pp:
+  filter: grepi:/_Incapsula_Resource
+
+IL/pp:
+  filter: grepi:as_sfid,grepi:PSV-OVA-WEB
+
+IN/pp:
+  filter: grepi:__RequestVerificationToken,grepi:data-cfemail,grepi:/cdn-cgi/l/email-protection,grepi:https://static.cloudflareinsights.com/beacon.min.js,grepi:Current Total of Registered Indiana Voters
+
+LA/pp:
+  filter: "grepi:Local time :,grepi:LA time    :,grepi:pageGenerationTime"
+
+MA/pp:
+  filter: grepi:/_Incapsula_Resource
+
+MD/pp:
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
+  ssl_no_verify: true
+
+ME/pp:
+  filter: element-by-id:left-wrapper
+  
+MN/pp:
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
+
+MO/pp:
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:RadCaptcha,grepi:__ncforminfo
+
+NC/pp:
+  filter: grepi:__RequestVerificationToken
+
+NJ/pp:
+  filter: grepi:/_Incapsula_Resource
+
+NV/pp:
+  filter: "grepi:requestId,grepi:/xeqjrib,grepi:div style=.display. none"
+
+NY/pp:
+  filter: element-by-class:container body-content,grepi:recaptcha,grepi:__RequestVerificationToken,grepi:data-cf-modified-,grepi:text/javascript
+
+OK/pp:
+  filter: grepi:__RequestVerificationToken
+
+RI/pp:
+  filter: grepi:/cdn-cgi/l/email-protection
+
+SC/pp:
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:NS_CSM_td
+
+SD/pp:
+  filter: element-by-class:content_block content_block_expanded
+#  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
+
+OR/pp:
+  filter: grepi:var sessionId,grepi:JSESSIONID_ORESTAR,grepi:Voter information updated on,grepi:Version. v4.2.
+
+PA/pp:
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
+
+TX/pp:
+  filter: "grepi:/MVP/mvp.do;jsessionid="
+
+NM/pp:
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
+
+MI/pp:
+  ssl_no_verify: true
+  filter: grepi:Registered Michigan Voters
+  
+TN/pp:
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:/VoterLookup/WebResource.axd
+
+VT/pp:
+  url: https://mvp.vermont.gov/
+  ssl_no_verify: true
+  filter: element-by-class:container
+
+WA/pp:
+  filter: element-by-id:inner-content
+
+WI/pp:
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:text/javascript
+
+WV/pp:
+  filter: grepi:__RequestVerificationToken
+
+WY/pp:
+  filter: grepi:/js/maps.js
+
+AL/ovr:
+  filter: "grepi:wsuid="
+
+CO/ovr:
+  filter: grepi:/voter/ruxitagentjs_ICA2SVfjqru_10187200323152418.js,grepi:javax.faces.ViewState
+
+DC/ovr:
+  filter: grepi:/cdn-cgi/l/email-protection
+
+CT/ovr:
+  filter: "element-by-id:container"
+  #grepi:bobcmn,grepi:text/javascript,grepi:blobfp,grepi:Your support ID is,grepi:window.jl=,grepi:function OZ,grepi:window.lL"
+
+DE/ovr:
+  filter: grepi:__RequestVerificationToken
+
+IA/ovr:
+  filter: grepi:/_Incapsula_Resource
+
+IL/ovr:
+  filter: grepi:as_sfid,grepi:PSV-OVA-WEB
+
+KY/ovr:
+  filter: "grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:ctl00.MainContent.DLKey"
+
+MA/ovr:
+  filter: grepi:/_Incapsula_Resource
+
+ID/ovr:
+  filter: grepi:OVRGuid
+
+IN/ovr:
+  filter: grepi:__RequestVerificationToken,grepi:/cdn-cgi/l/email-protection,grepi:Current Total of Registered Indiana Voters,grepi:https://static.cloudflareinsights.com/beacon.min.js
+
+HI/ovr:
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
+
+LA/ovr:
+  filter: "grepi:g_correlationId,grepi:formDigestElement.value,grepi:updateFormDigestPageLoaded,grepi:w.webkitPerformance"
+
+MD/ovr:
+  url: https://voterservices.elections.maryland.gov/OnlineVoterRegistration/VoterType
+  ssl_no_verify: true
+  filter: grepi:__ncforminfo,grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
+  
+MN/ovr:
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
+
+MO/ovr:
+  filter: grepi:__ncforminfo
+
+NM/ovr:
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
+
+NV/ovr:
+  filter: "grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:text/javascript,grepi:distil_r_blocked.html;grepi:style=.display. none"
+
+NC/ovr:
+  filter: "grepi:g_correlationId,grepi:_fV4UI=true,grepi:formDigestElement.value"
+
+OH/ovr:
+  filter: "grepi:userInfo: ,grepi:static.cloudflareinsights.com"
+
+OK/ovr:
+  filter: grepi:__RequestVerificationToken
+
+OR/ovr:
+  filter: "grepi:sessionId,grepi:/orestar/vr/voterQualification.do,grepi: 2020&nbsp;"
+
+PA/ovr:
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
+
+RI/ovr:
+  filter: grepi:/cdn-cgi/l/email-protection
+
+SC/ovr:
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:NS_CSM_td
+
+#  filter: element-by-id:buttonFooter
+
+VA/ovr:
+  filter: grepi:org.apache.struts.taglib.html.TOKEN,grepi:sessionId,grepi:/2020 
+
+VT/ovr:
+  url: "https://olvr.vermont.gov/"
+  filter: element-by-class:container
+
+WI/ovr:
+  filter: grepi:text/javascript,grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
+
