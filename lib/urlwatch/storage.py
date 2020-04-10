@@ -523,7 +523,36 @@ class CachePostgresStorage(CacheStorage):
     def clean(self, guid):
         # WRITE ME
         return 0
-            
+
+
+    def update_sites(self, jobs):
+        cur = self.db.cursor()
+        cur.execute('CREATE TABLE IF NOT EXISTS site ('
+                    'guid CHAR(40), '
+                    'name VARCHAR(128), '
+                    'url VARCHAR(1024), '
+                    'last_check TIMESTAMP, '
+                    'last_up TIMESTAMP, '
+                    'last_down TIMESTAMP, '
+                    'last_change TIMESTAMP, '
+                    'uptime_hour FLOAT, '
+                    'uptime_day FLOAT, '
+                    'uptime_week FLOAT, '
+                    'uptime_30 FLOAT, '
+                    'uptime_90 FLOAT, '
+                    'PRIMARY KEY(guid)'
+                    ')')
+        self.db.commit()
+
+        for job in jobs:
+            cur.execute('INSERT INTO site (guid, name, url)'
+                        ' VALUES (%s, %s, %s)'
+                        ' ON CONFLICT (guid) DO UPDATE SET'
+                        ' name=%s, url=%s',
+                        (job.get_guid(), job.name, job.url,
+                         job.name, job.url))
+        self.db.commit()
+
 
 class CacheEntry(minidb.Model):
     guid = str

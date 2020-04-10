@@ -64,7 +64,8 @@ class Urlwatch(object):
 
         if not self.urlwatch_config.edit:
             self.load_jobs()
-
+            self.cache_storage.update_sites(self.jobs)
+            
         if hasattr(self.urlwatch_config, 'migrate_urls'):
             self.urlwatch_config.migrate_cache(self)
 
