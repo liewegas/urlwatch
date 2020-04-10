@@ -41,6 +41,7 @@ import logging
 
 import psycopg2
 import datetime
+import hashlib
 
 from .util import atomic_rename, edit_file
 from .jobs import JobBase, UrlJob, ShellJob
@@ -456,12 +457,17 @@ class CachePostgresStorage(CacheStorage):
         cur = self.db.cursor()
         cur.execute('CREATE TABLE IF NOT EXISTS site_check ('
                     'id SERIAL, '
-                    'guid char(64), '
+                    'guid varchar(64), '
                     'timestamp TIMESTAMP, '
                     'data TEXT, '
                     'data_unfiltered TEXT, '
                     'tries INTEGER, '
                     'etag CHAR(64)'
+                    ')')
+        cur.execute('CREATE TABLE IF NOT EXISTS blob ('
+                    'guid varchar(64), '
+                    'data TEXT, '
+                    'primary key(guid)'
                     ')')
         self.db.commit()
 
@@ -483,7 +489,7 @@ class CachePostgresStorage(CacheStorage):
                     (guid,))
         r = cur.fetchone()
         if r:
-            return r[0], r[1], int(r[2].timestamp()), r[3], r[4]
+            return self.get_blob(cur, r[0]), self.get_blob(cur, r[1]), int(r[2].timestamp()), r[3], r[4]
         return None, None, None, 0, None
 
     def get_history_data(self, guid, count=1):
@@ -497,21 +503,105 @@ class CachePostgresStorage(CacheStorage):
                     ' ORDER BY timestamp DESC',
                     (guid,))
         for data, ts in cur:
+            data = self.get_blob(cur, data)
             if data not in history:
                 history[data] = int(ts.timestamp())
                 if len(history) >= count:
                     break;
         return history
 
+    def calc_uptime(self, guid, cur, cutoffs):
+        now = None
+        last = None
+        cur.execute('SELECT timestamp, tries FROM site_check WHERE guid=%s ORDER BY timestamp DESC',
+                    (guid,))
+        total_up = 0
+        total_down = 0
+        cutoff = 0
+        r = []
+        for rawts, tries in cur:
+            ts = rawts.timestamp()
+            if not last:
+                now = ts
+                cutoff = now - cutoffs.pop(0)
+            else:
+                assert cutoff < last
+                if ts < cutoff:
+                    tup = total_up
+                    tdn = total_down
+                    if tries == 0:
+                        tup += last - cutoff
+                    else:
+                        tdn += last - cutoff
+#                    print('cutoff %d  tup %d, tdn %d,  sum %d' % (cutoff, tup, tdn, tup+tdn))
+                    assert tup + tdn == now - cutoff
+                    r.append(float(tup) / float(tup + tdn))
+                    if not cutoffs:
+                        return r
+                    cutoff = now - cutoffs.pop(0)
+                if tries == 0:
+                    total_up += last - ts
+                else:
+                    total_down += last - ts
+#                print('cutoff %s  tup %d, tdn %d' % (cutoff, total_up, total_down))
+            last = ts
+
+        # we assume up for pre-history
+        assert cutoff < last
+        while True:
+            total_up += last - cutoff
+            last = cutoff
+            r.append(float(total_up) / float(total_up + total_down))
+            if not cutoffs:
+                return r
+            cutoff = now - cutoffs.pop(0)
+
     def save(self, job, guid, data, data_unfiltered, timestamp, tries,
-             etag=None):
+             etag=None, changed=False):
         cur = self.db.cursor()
+        dhash = self.save_blob(cur, data)
+        duhash = self.save_blob(cur, data_unfiltered)
         cur.execute('INSERT INTO site_check'
                     ' (guid, timestamp, data, data_unfiltered, tries, etag)'
                     ' VALUES (%s, %s, %s, %s, %s, %s)',
                     (guid, datetime.datetime.fromtimestamp(timestamp),
-                     data, data_unfiltered, tries, etag))
+                     dhash, duhash, tries, etag))
+
+        # recalc uptime
+        ups = self.calc_uptime(guid, cur, [3600, 3600*24, 3600*24*7, 3600*24*30, 3600*24*90])
+#        print('%s: %s' % (guid, ups))
+        if tries:
+            cur.execute('UPDATE site SET last_down=NOW(),last_check=NOW(),uptime_hour=%s,uptime_day=%s,uptime_week=%s,uptime_30=%s,uptime_90=%s'
+                        ' WHERE guid=%s',
+                        (ups[0], ups[1], ups[2], ups[3], ups[4], guid))
+        else:
+            cur.execute('UPDATE site SET last_up=NOW(),last_check=NOW(),uptime_hour=%s,uptime_day=%s,uptime_week=%s,uptime_30=%s,uptime_90=%s'
+                        ' WHERE guid=%s',
+                        (ups[0], ups[1], ups[2], ups[3], ups[4], guid))
+        if changed:
+            cur.execute('UPDATE site SET last_change=NOW()'
+                        ' WHERE guid=%s',
+                        (guid,))
         self.db.commit()
+
+    def save_blob(self, cur, data):
+        if data is None:
+            return None
+        sha_hash = hashlib.new('sha1')
+        sha_hash.update(data.encode('utf-8'))
+        guid = sha_hash.hexdigest()
+        cur.execute('INSERT INTO blob (guid, data) VALUES (%s, %s)'
+                    ' ON CONFLICT DO NOTHING',
+                    (guid, data))
+        return guid
+
+    def get_blob(self, cur, guid):
+        if guid is None:
+            return None
+        cur.execute('SELECT data FROM blob WHERE guid=%s',
+                    (guid,))
+        r = cur.fetchone()
+        return r[0]
 
     def delete(self, guid):
         cur = self.db.cursor()

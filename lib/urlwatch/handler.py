@@ -70,7 +70,8 @@ class JobState(object):
             # If no new data has been retrieved due to an exception, use the old job data
             self.new_data = self.old_data
 
-        self.cache_storage.save(self.job, self.job.get_guid(), self.new_data, self.new_data_unfiltered, time.time(), self.tries, self.etag)
+        self.cache_storage.save(self.job, self.job.get_guid(), self.new_data, self.new_data_unfiltered, time.time(), self.tries, self.etag,
+                                self.new_data != self.old_data)
 
     def process(self):
         logger.info('Processing: %s', self.job)
