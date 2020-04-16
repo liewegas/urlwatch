@@ -1,6 +1,6 @@
 default:
   headers:
-    User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36
+    User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.148 Safari/537.37
 
 
 ## ok ##
@@ -11,13 +11,13 @@ DE/pp:
   filter: grepi:__RequestVerificationToken
 
 CO/pp:
-  filter: grepi:/voter/ruxitagentjs_ICA2SVfjqru_10187200323152418.js,grepi:javax.faces.ViewState
+  filter: grepi:/voter/ruxitagentjs,grepi:javax.faces.ViewState
 
 CT/pp:
   filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
 
 DC/pp:
-  filter: grepi:__CMSCsrfToken,grepi:__VIEWSTATE
+  filter: grepi:__CMSCsrfToken,grepi:__VIEWSTATE,grepi:/ScriptResource.axd
 
 FL/pp:
   filter: grepi:/cdn-cgi/l/email-protection
@@ -59,6 +59,12 @@ MO/pp:
 NC/pp:
   filter: grepi:__RequestVerificationToken
 
+ND/pp:
+  filter: grepi:/WebResource.axd
+
+NE/pp:
+  filter: grepi:__RequestVerificationToken
+  
 NJ/pp:
   filter: grepi:/_Incapsula_Resource
 
@@ -75,7 +81,7 @@ RI/pp:
   filter: grepi:/cdn-cgi/l/email-protection
 
 SC/pp:
-  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:NS_CSM_td
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:NS_CSM_td,grepi:WebResource.axd
 
 SD/pp:
   filter: element-by-class:content_block content_block_expanded
@@ -101,7 +107,7 @@ TN/pp:
   filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:/VoterLookup/WebResource.axd
 
 VT/pp:
-  url: https://mvp.vermont.gov/
+#  url: https://mvp.vermont.gov/
   ssl_no_verify: true
   filter: element-by-class:container
 
@@ -109,7 +115,7 @@ WA/pp:
   filter: element-by-id:inner-content
 
 WI/pp:
-  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:text/javascript
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:text/javascript,grepi:/js/dnncore.js
 
 WV/pp:
   filter: grepi:__RequestVerificationToken
@@ -121,7 +127,7 @@ AL/ovr:
   filter: "grepi:wsuid="
 
 CO/ovr:
-  filter: grepi:/voter/ruxitagentjs_ICA2SVfjqru_10187200323152418.js,grepi:javax.faces.ViewState
+  filter: grepi:/voter/ruxitagentjs,grepi:javax.faces.ViewState
 
 DC/ovr:
   filter: grepi:/cdn-cgi/l/email-protection
@@ -158,7 +164,7 @@ LA/ovr:
   filter: "grepi:g_correlationId,grepi:formDigestElement.value,grepi:updateFormDigestPageLoaded,grepi:w.webkitPerformance"
 
 MD/ovr:
-  url: https://voterservices.elections.maryland.gov/OnlineVoterRegistration/VoterType
+#  url: https://voterservices.elections.maryland.gov/OnlineVoterRegistration/VoterType
   ssl_no_verify: true
   filter: grepi:__ncforminfo,grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
   
@@ -172,7 +178,7 @@ NM/ovr:
   filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
 
 NV/ovr:
-  filter: "grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:text/javascript,grepi:distil_r_blocked.html;grepi:style=.display. none"
+  filter: "grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:text/javascript,grepi:distil_r_blocked.html;grepi:style=.display. none,grepi:distil_r_captcha.html"
 
 NC/ovr:
   filter: "grepi:g_correlationId,grepi:_fV4UI=true,grepi:formDigestElement.value"
@@ -187,7 +193,7 @@ OR/ovr:
   filter: "grepi:sessionId,grepi:/orestar/vr/voterQualification.do,grepi: 2020&nbsp;"
 
 PA/ovr:
-  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
+  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:/ScriptResource.axd
 
 RI/ovr:
   filter: grepi:/cdn-cgi/l/email-protection
@@ -201,7 +207,7 @@ VA/ovr:
   filter: grepi:org.apache.struts.taglib.html.TOKEN,grepi:sessionId,grepi:/2020 
 
 VT/ovr:
-  url: "https://olvr.vermont.gov/"
+#  url: "https://olvr.vermont.gov/"
   filter: element-by-class:container
 
 WI/ovr:
