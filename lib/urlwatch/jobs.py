@@ -33,6 +33,7 @@ import hashlib
 import logging
 import os
 import re
+import random
 import subprocess
 import requests
 import textwrap
@@ -45,6 +46,25 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 logger = logging.getLogger(__name__)
 
+PROXIES = [
+#    '181.3.119.183',
+    '174.76.35.15:36163',
+    '96.44.133.110:58690',
+    '72.221.164.35:60670',
+    '174.75.238.82:16409',
+    '216.144.230.233:15993',
+    '208.102.51.6:58208',
+    '173.236.179.55:37045',
+]
+
+AGENTS = [
+    'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/605.1.15 (KHTML, like Gecko)',
+    'Mozilla/5.0 (iPad; CPU OS 9_3_5 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13G36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
+    'Mozilla/4.0 (compatible; MSIE 6.0; Windows 98)',
+    'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
+]
 
 class ShellError(Exception):
     """Exception for shell commands with non-zero exit code"""
@@ -268,18 +288,39 @@ class UrlJob(Job):
         else:
             timeout = self.timeout
 
-        response = requests.request(url=self.url,
-                                    data=self.data,
-                                    headers=headers,
-                                    method=self.method,
-                                    verify=(not self.ssl_no_verify),
-                                    cookies=self.cookies,
-                                    proxies=proxies,
-                                    timeout=timeout)
+        tries = 0
+        while True:
+            try:
+                headers['User-agent'] = random.choice(AGENTS)
+                # pick random proxy
+                print('try %s' % self.url)
+
+                response = requests.request(url=self.url,
+                                            data=self.data,
+                                            headers=headers,
+                                            method=self.method,
+                                            verify=(not self.ssl_no_verify),
+                                            cookies=self.cookies,
+                                            proxies=proxies,
+                                            timeout=timeout)
+                break
+
+            except Exception as e:
+                tries += 1
+                if tries > 5:
+                    print('fail %s after %d tries' % (self.url, tries))
+                    raise e
+
+                proxies['https'] = random.choice(PROXIES)
+                print('retry %s with proxy %s' % (self.url, proxies['https']))
+                pass
 
         response.raise_for_status()
         if response.status_code == requests.codes.not_modified:
             raise NotModifiedError()
+
+        if tries:
+            print('%s succeeded' % self.url)
 
         # Save ETag from response into job_state, which will be saved in cache
         job_state.etag = response.headers.get('ETag')
