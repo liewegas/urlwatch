@@ -261,7 +261,7 @@ class UrlJob(Job):
 
         if self.timeout is None:
             # default timeout
-            timeout = 60
+            timeout = 20
         elif self.timeout == 0:
             # never timeout
             timeout = None
