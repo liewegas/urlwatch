@@ -66,12 +66,12 @@ class JobState(object):
             self.history_data = self.cache_storage.get_history_data(guid, self.job.compared_versions)
 
     def save(self):
-        if self.new_data is None and self.exception is not None:
+#        if self.new_data is None and self.exception is not None:
             # If no new data has been retrieved due to an exception, use the old job data
-            self.new_data = self.old_data
+            #self.new_data = self.old_data
 
         self.cache_storage.save(self.job, self.job.get_guid(), self.new_data, self.new_data_unfiltered, time.time(), self.tries, self.etag,
-                                self.new_data != self.old_data)
+                                self.new_data and self.new_data != self.old_data)
 
     def process(self):
         logger.info('Processing: %s', self.job)
