@@ -455,7 +455,7 @@ class CachePostgresStorage(CacheStorage):
 
         # create table if it doesn't exist
         cur = self.db.cursor()
-        cur.execute('CREATE TABLE IF NOT EXISTS statewatch_check ('
+        cur.execute('CREATE TABLE IF NOT EXISTS site_check ('
                     'id SERIAL, '
                     'guid varchar(64), '
                     'timestamp TIMESTAMP, '
@@ -464,7 +464,7 @@ class CachePostgresStorage(CacheStorage):
                     'tries INTEGER, '
                     'etag CHAR(64)'
                     ')')
-        cur.execute('CREATE TABLE IF NOT EXISTS statewatch_blob ('
+        cur.execute('CREATE TABLE IF NOT EXISTS blob ('
                     'guid varchar(64), '
                     'data TEXT, '
                     'primary key(guid)'
@@ -477,13 +477,13 @@ class CachePostgresStorage(CacheStorage):
 
     def get_guids(self):
         cur = self.db.cursor()
-        cur.execute('SELECT DISTINCT(guid) FROM statewatch_check')
+        cur.execute('SELECT DISTINCT(guid) FROM site_check')
         return [a[0] for a in cur.fetchall()]
 
     def load(self, job, guid):
         cur = self.db.cursor()
         cur.execute('SELECT data, data_unfiltered, timestamp, tries, etag'
-                    ' FROM statewatch_check'
+                    ' FROM site_check'
                     ' WHERE guid=%s'
                     ' ORDER BY timestamp DESC LIMIT 1',
                     (guid,))
@@ -498,7 +498,7 @@ class CachePostgresStorage(CacheStorage):
             return history
         cur = self.db.cursor()
         cur.execute('SELECT data, timestamp'
-                    ' FROM statewatch_check'
+                    ' FROM site_check'
                     ' WHERE guid=%s AND tries=0'
                     ' ORDER BY timestamp DESC',
                     (guid,))
@@ -513,7 +513,7 @@ class CachePostgresStorage(CacheStorage):
     def calc_uptime(self, guid, cur, cutoffs):
         now = None
         last = None
-        cur.execute('SELECT timestamp, tries FROM statewatch_check WHERE guid=%s ORDER BY timestamp DESC',
+        cur.execute('SELECT timestamp, tries FROM site_check WHERE guid=%s ORDER BY timestamp DESC',
                     (guid,))
         total_up = 0
         total_down = 0
@@ -561,7 +561,7 @@ class CachePostgresStorage(CacheStorage):
         cur = self.db.cursor()
         dhash = self.save_blob(cur, data)
         duhash = self.save_blob(cur, data_unfiltered)
-        cur.execute('INSERT INTO statewatch_check'
+        cur.execute('INSERT INTO site_check'
                     ' (guid, timestamp, data, data_unfiltered, tries, etag)'
                     ' VALUES (%s, %s, %s, %s, %s, %s)',
                     (guid, datetime.datetime.fromtimestamp(timestamp),
@@ -571,15 +571,15 @@ class CachePostgresStorage(CacheStorage):
         ups = self.calc_uptime(guid, cur, [3600, 3600*24, 3600*24*7, 3600*24*30, 3600*24*90])
 #        print('%s: %s' % (guid, ups))
         if tries:
-            cur.execute('UPDATE statewatch_site SET last_down=NOW(),last_check=NOW(),uptime_hour=%s,uptime_day=%s,uptime_week=%s,uptime_30=%s,uptime_90=%s'
+            cur.execute('UPDATE site SET last_down=NOW(),last_check=NOW(),uptime_hour=%s,uptime_day=%s,uptime_week=%s,uptime_30=%s,uptime_90=%s'
                         ' WHERE guid=%s',
                         (ups[0], ups[1], ups[2], ups[3], ups[4], guid))
         else:
-            cur.execute('UPDATE statewatch_site SET last_up=NOW(),last_check=NOW(),uptime_hour=%s,uptime_day=%s,uptime_week=%s,uptime_30=%s,uptime_90=%s'
+            cur.execute('UPDATE site SET last_up=NOW(),last_check=NOW(),uptime_hour=%s,uptime_day=%s,uptime_week=%s,uptime_30=%s,uptime_90=%s'
                         ' WHERE guid=%s',
                         (ups[0], ups[1], ups[2], ups[3], ups[4], guid))
         if changed:
-            cur.execute('UPDATE statewatch_site SET last_change=NOW()'
+            cur.execute('UPDATE site SET last_change=NOW()'
                         ' WHERE guid=%s',
                         (guid,))
         self.db.commit()
@@ -590,7 +590,7 @@ class CachePostgresStorage(CacheStorage):
         sha_hash = hashlib.new('sha1')
         sha_hash.update(data.encode('utf-8'))
         guid = sha_hash.hexdigest()
-        cur.execute('INSERT INTO statewatch_blob (guid, data) VALUES (%s, %s)'
+        cur.execute('INSERT INTO blob (guid, data) VALUES (%s, %s)'
                     ' ON CONFLICT DO NOTHING',
                     (guid, data))
         return guid
@@ -598,14 +598,14 @@ class CachePostgresStorage(CacheStorage):
     def get_blob(self, cur, guid):
         if guid is None:
             return None
-        cur.execute('SELECT data FROM statewatch_blob WHERE guid=%s',
+        cur.execute('SELECT data FROM blob WHERE guid=%s',
                     (guid,))
         r = cur.fetchone()
         return r[0]
 
     def delete(self, guid):
         cur = self.db.cursor()
-        cur.execute('DELETE FROM statewatch_check'
+        cur.execute('DELETE FROM site_check'
                     ' WHERE guid=%s',
                     (guid,))
         self.db.commit()
@@ -617,7 +617,7 @@ class CachePostgresStorage(CacheStorage):
 
     def update_sites(self, jobs):
         cur = self.db.cursor()
-        cur.execute('CREATE TABLE IF NOT EXISTS statewatch_site ('
+        cur.execute('CREATE TABLE IF NOT EXISTS site ('
                     'guid CHAR(40), '
                     'name VARCHAR(128), '
                     'url VARCHAR(1024), '
@@ -635,7 +635,7 @@ class CachePostgresStorage(CacheStorage):
         self.db.commit()
 
         for job in jobs:
-            cur.execute('INSERT INTO statewatch_site (guid, name, url)'
+            cur.execute('INSERT INTO site (guid, name, url)'
                         ' VALUES (%s, %s, %s)'
                         ' ON CONFLICT (guid) DO UPDATE SET'
                         ' name=%s, url=%s',
