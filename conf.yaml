@@ -1,6 +1,19 @@
 default:
   headers:
     User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.148 Safari/537.37
+  https_proxies:
+    - "socks5://96.113.176.101:1080"
+    - "socks5://66.33.212.132:55405"
+    - "socks5://173.236.180.213:32545"
+    - "socks5://208.113.153.52:45250"
+    - "socks5://47.49.12.168:27097"
+  agents:
+    - "Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36"
+    - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/605.1.15 (KHTML, like Gecko)"
+    - "Mozilla/5.0 (iPad; CPU OS 9_3_5 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13G36"
+    - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"
+    - "Mozilla/4.0 (compatible; MSIE 6.0; Windows 98)"
+    - "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
 
 
 ## ok ##
