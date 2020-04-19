@@ -75,7 +75,7 @@ class JobState(object):
             # If no new data has been retrieved due to an exception, use the old job data
             #self.new_data = self.old_data
 
-        if isinstance(job_state.exception, NotModifiedError):
+        if isinstance(self.exception, NotModifiedError):
             error = None
         elif self.traceback:
             error = self.traceback
