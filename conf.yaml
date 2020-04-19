@@ -30,7 +30,7 @@ CT/pp:
   filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
 
 DC/pp:
-  filter: grepi:__CMSCsrfToken,grepi:__VIEWSTATE,grepi:/ScriptResource.axd
+  filter: grepi:__CMSCsrfToken,grepi:__VIEWSTATE,grepi:/ScriptResource.axd,grepi:body class
 
 FL/pp:
   filter: grepi:/cdn-cgi/l/email-protection
@@ -51,7 +51,7 @@ IN/pp:
   filter: grepi:__RequestVerificationToken,grepi:data-cfemail,grepi:/cdn-cgi/l/email-protection,grepi:https://static.cloudflareinsights.com/beacon.min.js,grepi:Current Total of Registered Indiana Voters
 
 LA/pp:
-  filter: "grepi:Local time :,grepi:LA time    :,grepi:pageGenerationTime"
+  filter: "grepi:Local time :,grepi:LA time    :,grepi:pageGenerationTime,grepi:var isMobile"
 
 MA/pp:
   filter: grepi:/_Incapsula_Resource
@@ -73,7 +73,7 @@ NC/pp:
   filter: grepi:__RequestVerificationToken
 
 ND/pp:
-  filter: grepi:/WebResource.axd
+  filter: grepi:/WebResource.axd,grepi:/ScriptResource.axd
 
 NE/pp:
   filter: grepi:__RequestVerificationToken
@@ -82,10 +82,10 @@ NJ/pp:
   filter: grepi:/_Incapsula_Resource
 
 NV/pp:
-  filter: "grepi:requestId,grepi:/xeqjrib,grepi:div style=.display. none"
+  filter: "grepi:requestId,grepi:/xeqjrib,grepi:style..display. none"
 
 NY/pp:
-  filter: element-by-class:container body-content,grepi:recaptcha,grepi:__RequestVerificationToken,grepi:data-cf-modified-,grepi:text/javascript
+  filter: element-by-class:container body-content,grepi:recaptcha,grepi:__RequestVerificationToken,grepi:data-cf-modified-,grepi:text/javascript,grepi:/ScriptResource.axd
 
 OK/pp:
   filter: grepi:__RequestVerificationToken
@@ -97,7 +97,7 @@ SC/pp:
   filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:NS_CSM_td,grepi:WebResource.axd
 
 SD/pp:
-  filter: element-by-class:content_block content_block_expanded
+  filter: element-by-class:content_block content_block_expanded,grepi:rdpDOB_wrapper
 #  filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
 
 OR/pp:
@@ -191,7 +191,7 @@ NM/ovr:
   filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
 
 NV/ovr:
-  filter: "grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:text/javascript,grepi:distil_r_blocked.html;grepi:style=.display. none,grepi:distil_r_captcha.html"
+  filter: "grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:text/javascript,grepi:distil_r_blocked.html;grepi:style..display..none,grepi:distil_r_captcha.html"
 
 NC/ovr:
   filter: "grepi:g_correlationId,grepi:_fV4UI=true,grepi:formDigestElement.value"
@@ -203,7 +203,7 @@ OK/ovr:
   filter: grepi:__RequestVerificationToken
 
 OR/ovr:
-  filter: "grepi:sessionId,grepi:/orestar/vr/voterQualification.do,grepi: 2020&nbsp;"
+  filter: "grepi:sessionId,grepi:/orestar/vr/voterQualification.do,grepi: 2020&nbsp;,grepi:__VIEWSTATE"
 
 PA/ovr:
   filter: grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:/ScriptResource.axd
@@ -224,5 +224,5 @@ VT/ovr:
   filter: element-by-class:container
 
 WI/ovr:
-  filter: grepi:text/javascript,grepi:__VIEWSTATE,grepi:__EVENTVALIDATION
+  filter: grepi:text/javascript,grepi:__VIEWSTATE,grepi:__EVENTVALIDATION,grepi:js/dnncore.js
 
