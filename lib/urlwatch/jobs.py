@@ -333,6 +333,9 @@ class UrlJob(Job):
         if self.encoding:
             response.encoding = self.encoding
 
+        if proxies['https']:
+            job_state.proxy = proxies['https']
+
         return response.text
 
     def add_custom_headers(self, headers):

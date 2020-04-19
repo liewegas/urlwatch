@@ -56,6 +56,7 @@ class JobState(object):
         self.tries = 0
         self.etag = None
         self.error_ignored = False
+        self.proxy = None
 
     def load(self):
         guid = self.job.get_guid()
@@ -71,6 +72,7 @@ class JobState(object):
             #self.new_data = self.old_data
 
         self.cache_storage.save(self.job, self.job.get_guid(), self.new_data, self.new_data_unfiltered, time.time(), self.tries, self.etag,
+                                self.proxy,
                                 self.new_data and self.new_data != self.old_data)
 
     def process(self):
