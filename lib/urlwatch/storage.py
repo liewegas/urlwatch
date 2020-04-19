@@ -463,7 +463,8 @@ class CachePostgresStorage(CacheStorage):
                     'data_unfiltered TEXT, '
                     'tries INTEGER, '
                     'etag CHAR(64), '
-                    'proxy varchar(128)'
+                    'proxy varchar(128), '
+                    'error TEXT'
                     ')')
         cur.execute('CREATE TABLE IF NOT EXISTS blob ('
                     'guid varchar(64), '
@@ -558,15 +559,15 @@ class CachePostgresStorage(CacheStorage):
             cutoff = now - cutoffs.pop(0)
 
     def save(self, job, guid, data, data_unfiltered, timestamp, tries,
-             etag=None, proxy=None, changed=False):
+             etag=None, proxy=None, error=None, changed=False):
         cur = self.db.cursor()
         dhash = self.save_blob(cur, data)
         duhash = self.save_blob(cur, data_unfiltered)
         cur.execute('INSERT INTO site_check'
-                    ' (guid, timestamp, data, data_unfiltered, tries, etag, proxy)'
-                    ' VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                    ' (guid, timestamp, data, data_unfiltered, tries, etag, proxy, error)'
+                    ' VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
                     (guid, datetime.datetime.fromtimestamp(timestamp),
-                     dhash, duhash, tries, etag, proxy))
+                     dhash, duhash, tries, etag, proxy, error))
 
         # recalc uptime
         ups = self.calc_uptime(guid, cur, [3600, 3600*24, 3600*24*7, 3600*24*30, 3600*24*90])

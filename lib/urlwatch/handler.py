@@ -33,9 +33,13 @@ import logging
 import time
 import traceback
 
+print(1)
 from .filters import FilterBase
+print(2)
 from .jobs import NotModifiedError
+print(3)
 from .reporters import ReporterBase
+print(4)
 
 logger = logging.getLogger(__name__)
 
@@ -71,8 +75,14 @@ class JobState(object):
             # If no new data has been retrieved due to an exception, use the old job data
             #self.new_data = self.old_data
 
+        if isinstance(job_state.exception, NotModifiedError):
+            error = None
+        elif self.traceback:
+            error = self.traceback
+        else:
+            error = None
         self.cache_storage.save(self.job, self.job.get_guid(), self.new_data, self.new_data_unfiltered, time.time(), self.tries, self.etag,
-                                self.proxy,
+                                self.proxy, error,
                                 self.new_data and self.new_data != self.old_data)
 
     def process(self):
