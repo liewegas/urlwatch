@@ -528,7 +528,7 @@ class CachePostgresStorage(CacheStorage):
                 cutoff = now - cutoffs.pop(0)
             else:
                 assert cutoff < last
-                if ts < cutoff:
+                while ts < cutoff:
                     tup = total_up
                     tdn = total_down
                     if tries == 0:
