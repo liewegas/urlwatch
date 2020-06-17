@@ -573,17 +573,17 @@ class CachePostgresStorage(CacheStorage):
         ups = self.calc_uptime(guid, cur, [3600, 3600*24, 3600*24*7, 3600*24*30, 3600*24*90])
 #        print('%s: %s' % (guid, ups))
         if tries:
-            cur.execute('UPDATE statewatch_site SET last_down=NOW(),last_check=NOW(),uptime_hour=%s,uptime_day=%s,uptime_week=%s,uptime_30=%s,uptime_90=%s'
+            cur.execute('UPDATE statewatch_site SET last_proxy=%s,last_down=NOW(),last_check=NOW(),uptime_hour=%s,uptime_day=%s,uptime_week=%s,uptime_30=%s,uptime_90=%s'
                         ' WHERE guid=%s',
-                        (ups[0], ups[1], ups[2], ups[3], ups[4], guid))
+                        (proxy, ups[0], ups[1], ups[2], ups[3], ups[4], guid))
         else:
-            cur.execute('UPDATE statewatch_site SET last_up=NOW(),last_check=NOW(),uptime_hour=%s,uptime_day=%s,uptime_week=%s,uptime_30=%s,uptime_90=%s'
+            cur.execute('UPDATE statewatch_site SET last_proxy=%s,last_up=NOW(),last_check=NOW(),uptime_hour=%s,uptime_day=%s,uptime_week=%s,uptime_30=%s,uptime_90=%s'
                         ' WHERE guid=%s',
-                        (ups[0], ups[1], ups[2], ups[3], ups[4], guid))
+                        (proxy, ups[0], ups[1], ups[2], ups[3], ups[4], guid))
         if changed:
-            cur.execute('UPDATE statewatch_site SET last_change=NOW()'
+            cur.execute('UPDATE statewatch_site SET last_proxy=%s, last_change=NOW()'
                         ' WHERE guid=%s',
-                        (guid,))
+                        (proxy, guid,))
         self.db.commit()
 
     def save_blob(self, cur, data):
@@ -632,6 +632,7 @@ class CachePostgresStorage(CacheStorage):
                     'uptime_week FLOAT, '
                     'uptime_30 FLOAT, '
                     'uptime_90 FLOAT, '
+                    'last_proxy VARCHAR(1024) '
                     'PRIMARY KEY(guid)'
                     ')')
         self.db.commit()
